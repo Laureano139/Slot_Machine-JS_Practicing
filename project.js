@@ -1,6 +1,28 @@
 
 const prompt = require('prompt-sync')();
 
+// GLOBAL VARIABLES
+
+const ROWS = 3;
+const COLUMNS = 3;
+
+const SYMBOLS = {'♠':9,
+    '♣': 9,
+    '♥': 6, 
+    '♦': 3,
+    '7': 2,
+    'JACKPOT': 1
+};
+
+const SYMBOLS_VALUES = {
+    '♠': 0.6,
+    '♣': 0.6,
+    '♥': 1.2,
+    '♦': 2,
+    '7': 5,
+    'JACKPOT': 10
+};
+
 // DEPOSIT MONEY
 
 /**
@@ -71,6 +93,48 @@ const getBetAmount = (balance, numLines) => {
     }
 }
 
+// SPIN
+
+/**
+ * Each array in the grid represents a column in the slot machine.
+ * Aftwerwards, we need to transpose the grid, so that each array in the grid represents a row (to check if the user won).
+*/
+
+const spin = () => {
+    // Como só vamos adicionar e retirar símbolos do array, não alterando a referência, podemos declarar como "const"
+    const symbols = [];
+    for(const [symbol, count] of Object.entries(SYMBOLS)){
+        // console.log(symbol, count);
+        for(let i = 0; i < count; i++){
+            symbols.push(symbol);
+        }
+    }
+    // console.log(symbols)
+
+    const grid = [];
+
+    for(let i = 0; i < COLUMNS; i++){
+        grid.push([]);
+        const gridSymbols = [...symbols]
+        for(let j = 0; j < ROWS; j++){
+            // Math.random() -> Either 0 or 1
+            const randomIndex = Math.floor(Math.random() * gridSymbols.length);
+            const selectedSymbol = gridSymbols[randomIndex];
+            grid[i].push(selectedSymbol);
+            // Remove the selected symbol from the gridSymbols
+            gridSymbols.splice(randomIndex, 1);
+        }
+    }
+    return grid;
+}
+
+// TRANSPOSE MATRIX (GRID)
+
+const transpose = (grid) => {
+
+}
+
 let balance = deposit()
 const numLines = numberOfLinesBet()
 const betAmount = getBetAmount(balance, numLines)
+const slotGrid = spin()
