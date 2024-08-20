@@ -6,12 +6,12 @@ const prompt = require('prompt-sync')();
 const ROWS = 3;
 const COLUMNS = 3;
 
-const SYMBOLS = {'♠':9,
-    '♣': 9,
-    '♥': 6, 
-    '♦': 3,
-    '7': 2,
-    'JACKPOT': 1
+const SYMBOLS = {'♠':1000,
+    '♣': 1000,
+    '♥': 700, 
+    '♦': 700,
+    '7': 10,
+    'JACKPOT': 5
 };
 
 const SYMBOLS_VALUES = {
@@ -131,10 +131,32 @@ const spin = () => {
 // TRANSPOSE MATRIX (GRID)
 
 const transpose = (grid) => {
+    const rowsGrid = [];
+    for(let i = 0; i < ROWS; i++){
+        rowsGrid.push([]);
+        for(let j = 0; j < COLUMNS; j++){
+            rowsGrid[i].push(grid[j][i]);
+        }
+    }
+    return rowsGrid;
+}
 
+const prettyPrintRows = (rowsGrid) => {
+    for(const row of rowsGrid){
+        let rowStr = '';
+        for(const [index, symbol] of row.entries()){
+            rowStr += symbol;
+            if(index < row.length - 1){
+                rowStr += ' | ';
+            }
+        }
+        console.log(rowStr);
+    }
 }
 
 let balance = deposit()
 const numLines = numberOfLinesBet()
 const betAmount = getBetAmount(balance, numLines)
 const slotGrid = spin()
+const transposedSlotGrid = transpose(slotGrid)
+prettyPrintRows(transposedSlotGrid);
