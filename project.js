@@ -9,18 +9,17 @@ const COLUMNS = 3;
 const SYMBOLS = {'♠':1000,
     '♣': 1000,
     '♥': 700, 
-    '♦': 700,
-    '7': 10,
-    'JACKPOT': 5
+    '♦': 300,
+    '7': 12,
+    'JACKPOT': 6
 };
 
 const SYMBOLS_VALUES = {
-    '♠': 0.6,
-    '♣': 0.6,
-    '♥': 1.2,
-    '♦': 2,
-    '7': 5,
-    'JACKPOT': 10
+    '♣': 1.2,
+    '♥': 1.5,
+    '♦': 2.5,
+    '7': 100,
+    'JACKPOT': 200
 };
 
 // DEPOSIT MONEY
@@ -154,9 +153,55 @@ const prettyPrintRows = (rowsGrid) => {
     }
 }
 
-let balance = deposit()
-const numLines = numberOfLinesBet()
-const betAmount = getBetAmount(balance, numLines)
-const slotGrid = spin()
-const transposedSlotGrid = transpose(slotGrid)
-prettyPrintRows(transposedSlotGrid);
+const calculateWinnings = (transposedSlotGrid, betAmount, lines) => {
+    let winnings = 0;
+
+    for(let row = 0; row < lines; row++){
+        const symbols = transposedSlotGrid[row];
+        let equalSymbols = true;
+
+        for(const symbol of symbols){
+            if(symbol !== symbols[0]){
+                equalSymbols = false;
+                break;
+            }   
+        }
+
+        if(equalSymbols){
+            winnings += SYMBOLS_VALUES[symbols[0]] * betAmount;
+        }
+    }
+    return winnings;
+}
+
+const slotMachine = () => {
+    let balance = deposit()
+
+    while(true){
+        console.log(`Your current balance is: ${balance}€\n`);
+
+        const numLines = numberOfLinesBet()
+        const betAmount = getBetAmount(balance, numLines)
+        balance -= betAmount * numLines;
+        const slotGrid = spin()
+        const transposedSlotGrid = transpose(slotGrid)
+        prettyPrintRows(transposedSlotGrid);
+        const winnings = calculateWinnings(transposedSlotGrid, betAmount, numLines)
+        balance += winnings;
+        console.log("You have won: " + winnings.toString() + "€\n");
+
+        if(balance == 0){
+            console.log("No money, no party! :(\n");
+            break;
+        }
+        
+        const continuePlaying = prompt('Do you want to play again? (yes/no) >> ');
+
+        if(continuePlaying !== 'yes'){
+            console.log(`You have finished the game with ${balance}€!`);
+            break;
+        }
+    }
+}
+
+slotMachine();
